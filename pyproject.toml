@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "crm"
+version = "0.1.0"
+description = ""
+authors = ["cmareau-git <charles_mareau@hotmail.fr>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+pymysql = "^1.1.1"
+sqlalchemy = "^2.0.36"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
