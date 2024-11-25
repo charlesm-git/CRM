@@ -4,14 +4,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy import ForeignKey, Integer, String, DateTime
 
-from models.role import Role
 from models.database import Base
-from models.client import Client
-from models.event import Event
-
+import models.role
+import models.client
+import models.event
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "crm_user"
 
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True
@@ -31,12 +30,12 @@ class User(Base):
     )
 
     # Relationship
-    role: Mapped["Role"] = relationship(back_populates="users")
-    clients: Mapped[Optional[List["Client"]]] = relationship(
-        back_populates="sales_contact"
+    role: Mapped["models.role.Role"] = relationship("Role", back_populates="users")
+    clients: Mapped[Optional[List["models.client.Client"]]] = relationship(
+        "Client", back_populates="sales_contact"
     )
-    events: Mapped[Optional[List["Event"]]] = relationship(
-        back_populates="support_contact"
+    events: Mapped[Optional[List["models.event.Event"]]] = relationship(
+        "Event", back_populates="support_contact"
     )
 
     def __repr__(self):

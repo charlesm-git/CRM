@@ -3,10 +3,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Boolean, ForeignKey, Integer, DateTime
 
-from models.client import Client
-from models.event import Event
 from models.database import Base
-
+import models.client
+import models.event
 
 class Contract(Base):
     __tablename__ = "contract"
@@ -30,8 +29,8 @@ class Contract(Base):
     )
 
     # Relationship
-    client: Mapped["Client"] = relationship(back_populates="contracts")
-    event: Mapped["Event"] = relationship(back_populates="contract")
+    client: Mapped["models.client.Client"] = relationship(back_populates="contracts")
+    event: Mapped["models.event.Event"] = relationship(back_populates="contract")
 
     def __repr__(self):
         return f"<Contract(id={self.id}, client_id='{self.client_id}')>"

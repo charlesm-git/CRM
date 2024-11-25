@@ -1,11 +1,9 @@
-from typing import Optional
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from typing import Optional, List
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String
 
-from models.user import User
-
-class Base(DeclarativeBase):
-    pass
+from models.database import Base
+import models.user
 
 
 class Role(Base):
@@ -17,4 +15,4 @@ class Role(Base):
     name: Mapped[str] = mapped_column(String(16))
 
     # Relationship
-    users: Mapped[Optional[list["User"]]] = relationship(back_populates="role")
+    users: Mapped[Optional[List["models.user.User"]]] = relationship(back_populates="role")
