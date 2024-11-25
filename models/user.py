@@ -26,7 +26,9 @@ class User(Base):
     date_updated: Mapped[datetime] = mapped_column(
         DateTime, default=func.now(), onupdate=func.now()
     )
-    role_id: Mapped[int] = mapped_column(ForeignKey("role.id"))
+    role_id: Mapped[int] = mapped_column(
+        ForeignKey("role.id", ondelete="RESTRICT", onupdate="CASCADE")
+    )
 
     # Relationship
     role: Mapped["Role"] = relationship(back_populates="users")

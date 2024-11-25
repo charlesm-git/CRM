@@ -26,7 +26,9 @@ class Client(Base):
     date_updated: Mapped[datetime] = mapped_column(
         DateTime, default=func.now(), onupdate=func.now()
     )
-    sales_contact_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    sales_contact_id: Mapped[int] = mapped_column(
+        ForeignKey("user.id", ondelete="RESTRICT", onupdate="CASCADE")
+    )
 
     # Relationship
     contracts: Mapped[Optional[List["Contract"]]] = relationship(

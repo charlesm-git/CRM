@@ -14,7 +14,9 @@ class Contract(Base):
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True
     )
-    client_id: Mapped[int] = mapped_column(ForeignKey("client.id"))
+    client_id: Mapped[int] = mapped_column(
+        ForeignKey("client.id", ondelete="CASCADE")
+    )
     total_contract_amount: Mapped[int] = mapped_column(Integer)
     remaining_amount_to_pay: Mapped[int] = mapped_column(Integer)
     date_created: Mapped[datetime] = mapped_column(
