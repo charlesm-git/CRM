@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from sqlalchemy import ForeignKey, Integer, String, DateTime
+from sqlalchemy import ForeignKey, Integer, String, DateTime, select
 
 
 from models.database import Base
@@ -32,10 +32,28 @@ class Client(Base):
     )
 
     # Relationship
-    contracts: Mapped[Optional[List["models.contract.Contract"]]] = relationship(
-        back_populates="client"
+    contracts: Mapped[Optional[List["models.contract.Contract"]]] = (
+        relationship(back_populates="client")
     )
-    sales_contact: Mapped["models.user.User"] = relationship(back_populates="clients")
+    sales_contact: Mapped["models.user.User"] = relationship(
+        back_populates="clients"
+    )
 
     def __repr__(self):
         return f"<Client(id={self.id}, name='{self.name}')>"
+
+    def save(self, session):
+        session.add(self)
+        session.commit()
+
+    def delete(self, session):
+        session.delete(self)
+        session.commit()
+
+    @classmethod
+    def get_all_users(cls, session):
+        return session.scalar(select(cls))
+
+    @classmethod
+    def get_by_id(cls, session, id):
+        return session.get(cls, id)

@@ -2,12 +2,13 @@ from datetime import datetime
 from typing import Optional, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from sqlalchemy import ForeignKey, Integer, String, DateTime
+from sqlalchemy import ForeignKey, Integer, String, DateTime, select
 
 from models.database import Base
 import models.role
 import models.client
 import models.event
+
 
 class User(Base):
     __tablename__ = "crm_user"
@@ -30,7 +31,9 @@ class User(Base):
     )
 
     # Relationship
-    role: Mapped["models.role.Role"] = relationship("Role", back_populates="users")
+    role: Mapped["models.role.Role"] = relationship(
+        "Role", back_populates="users"
+    )
     clients: Mapped[Optional[List["models.client.Client"]]] = relationship(
         "Client", back_populates="sales_contact"
     )
@@ -40,3 +43,41 @@ class User(Base):
 
     def __repr__(self):
         return f"<User(id={self.id}, name='{self.name}')>"
+
+    def has_permission(self, action):
+        role_permission = {
+            "sales": [
+                "create-client",
+                "update-client",
+                "delete-client",
+                "update-contract",
+                "create-event",
+                "update-event",
+            ],
+            "management": [
+                "create-user",
+                "update-user",
+                "delete-user",
+                "create-contract",
+                "update-contract",
+                "assign-support-contact-to-event",
+            ],
+            "support": ["update-event"],
+        }
+        return action in role_permission.get(self.role.name, [])
+
+    def save(self, session):
+        session.add(self)
+        session.commit()
+
+    def delete(self, session):
+        session.delete(self)
+        session.commit()
+
+    @classmethod
+    def get_all_users(cls, session):
+        return session.scalar(select(cls))
+
+    @classmethod
+    def get_by_id(cls, session, id):
+        return session.get(cls, id)
