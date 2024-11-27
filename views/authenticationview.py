@@ -11,8 +11,12 @@ class AuthenticationView:
         return [email, password]
 
     @staticmethod
-    def get_login_error():
-        print("Invalid email or password.")
+    def get_email_error():
+        print("This email do not have an account.")
+        
+    @staticmethod
+    def get_mismatch_error():
+        print("Email and password do not match.")
     
     @staticmethod
     def login_successfull():

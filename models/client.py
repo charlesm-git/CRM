@@ -5,7 +5,7 @@ from sqlalchemy.sql import func
 from sqlalchemy import ForeignKey, Integer, String, DateTime, select
 
 
-from models.database import Base
+from models.base import Base
 import models.contract
 import models.user
 
@@ -41,19 +41,3 @@ class Client(Base):
 
     def __repr__(self):
         return f"<Client(id={self.id}, name='{self.name}')>"
-
-    def save(self, session):
-        session.add(self)
-        session.commit()
-
-    def delete(self, session):
-        session.delete(self)
-        session.commit()
-
-    @classmethod
-    def get_all_users(cls, session):
-        return session.scalar(select(cls))
-
-    @classmethod
-    def get_by_id(cls, session, id):
-        return session.get(cls, id)

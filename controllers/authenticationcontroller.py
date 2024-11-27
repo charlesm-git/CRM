@@ -3,7 +3,6 @@ from os import remove
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import jwt
-from getpass import getpass
 
 from sqlalchemy import select
 
@@ -18,18 +17,29 @@ class AuthenticationController:
         self.session = session
 
     def login(self):
+        """
+        CMR login Function using the user credentials.
+        Creates a JWT.
+
+        :return: returns a User instance matching the credentials or an error
+        message
+        """
+        # Get users credentials and look up un the database for an email match
         email, password = self.view.get_credentials()
         user = self.session.scalar(select(User).where(User.email == email))
-        print(user)
+        
         if not user:
-            return self.view.get_login_error()
+            return self.view.get_email_error()
 
+        # Check if the passwords match
         ph = PasswordHasher()
         try:
             ph.verify(user.password, password)
         except VerifyMismatchError:
-            return self.view.get_login_error()
+            self.view.get_mismatch_error()
+            return None
 
+        # Creates the JWT
         token = jwt.encode(
             {
                 "user_id": user.id,
@@ -40,6 +50,7 @@ class AuthenticationController:
             algorithm="HS256",
         )
 
+        # Store the JWT
         with open("token.txt", "w") as token_file:
             token_file.write(token)
 
@@ -48,6 +59,7 @@ class AuthenticationController:
         return user
 
     def valid_token(self):
+        """Check if the JWT is still valid"""
         token = self.load_token()
 
         if token is None:
@@ -63,6 +75,7 @@ class AuthenticationController:
 
     @staticmethod
     def load_token():
+        """Load the JWT from the .twt file"""
         try:
             with open("token.txt", "r") as token_file:
                 return token_file.read()
@@ -72,6 +85,7 @@ class AuthenticationController:
 
     @staticmethod
     def logout():
+        """Logout the user by deleting the JWT file"""
         try:
             remove("token.txt")
             print("Logged out successfully.")

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from sqlalchemy import Boolean, ForeignKey, Integer, DateTime
 
-from models.database import Base
+from models.base import Base
 import models.client
 import models.event
 

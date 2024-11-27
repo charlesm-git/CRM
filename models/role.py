@@ -2,7 +2,7 @@ from typing import Optional, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String
 
-from models.database import Base
+from models.base import Base
 import models.user
 
 

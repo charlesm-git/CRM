@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import Optional, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from sqlalchemy import ForeignKey, Integer, String, DateTime, select
+from sqlalchemy import ForeignKey, Integer, String, DateTime
 
-from models.database import Base
+from models.base import Base
 import models.role
 import models.client
 import models.event
@@ -64,20 +64,8 @@ class User(Base):
             ],
             "support": ["update-event"],
         }
-        return action in role_permission.get(self.role.name, [])
-
-    def save(self, session):
-        session.add(self)
-        session.commit()
-
-    def delete(self, session):
-        session.delete(self)
-        session.commit()
-
-    @classmethod
-    def get_all_users(cls, session):
-        return session.scalar(select(cls))
-
-    @classmethod
-    def get_by_id(cls, session, id):
-        return session.get(cls, id)
+        if not action in role_permission.get(self.role.name, []):
+            raise PermissionError(
+                "You do not have the permission to perform this action"
+            )
+        return True
