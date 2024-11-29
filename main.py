@@ -1,8 +1,8 @@
-from controllers.authenticationcontroller import AuthenticationController
-from controllers.usercontroller import BaseController
-from models.database import get_session
+from commands.authenticationcommands import AuthenticationController
+from commands.usercommands import BaseController
+from database import get_session
 from views.authenticationview import AuthenticationView
-from views.baseview import BaseView
+from views.userview import UserView
 from argon2 import PasswordHasher
 
 from models.user import User
@@ -12,7 +12,7 @@ ph = PasswordHasher()
 
 session = get_session()
 
-view = BaseView()
+view = UserView()
 auth_view = AuthenticationView()
 
 auth_controller = AuthenticationController(auth_view, session)

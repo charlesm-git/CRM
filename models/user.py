@@ -42,30 +42,4 @@ class User(Base):
     )
 
     def __repr__(self):
-        return f"<User(id={self.id}, name='{self.name}')>"
-
-    def has_permission(self, action):
-        role_permission = {
-            "sales": [
-                "create-client",
-                "update-client",
-                "delete-client",
-                "update-contract",
-                "create-event",
-                "update-event",
-            ],
-            "management": [
-                "create-user",
-                "update-user",
-                "delete-user",
-                "create-contract",
-                "update-contract",
-                "assign-support-contact-to-event",
-            ],
-            "support": ["update-event"],
-        }
-        if not action in role_permission.get(self.role.name, []):
-            raise PermissionError(
-                "You do not have the permission to perform this action"
-            )
-        return True
+        return f"{self.name} {self.surname} as {self.role.name}"

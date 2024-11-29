@@ -4,20 +4,20 @@ class AuthenticationView:
     def __init__(self):
         pass
 
-    @staticmethod
-    def get_credentials():
+    @classmethod
+    def get_credentials(cls):
         email = input("Enter email : ")
         password = getpass("Enter password : ")
         return [email, password]
 
-    @staticmethod
-    def get_email_error():
-        print("This email do not have an account.")
+    @classmethod
+    def get_email_error(cls):
+        return "This email do not have an account."
         
-    @staticmethod
-    def get_mismatch_error():
-        print("Email and password do not match.")
+    @classmethod
+    def get_mismatch_error(cls):
+        return "Email and password do not match."
     
-    @staticmethod
-    def login_successfull():
-        print("Login successfull")
+    @classmethod
+    def login_successfull(cls):
+        return print("Login successfull")

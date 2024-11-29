@@ -1,9 +1,9 @@
-class BaseView:
+class UserView:
     def __init__(self):
         pass
 
-    @staticmethod
-    def user_creation_view():
+    @classmethod
+    def user_creation_view(cls):
         name = input("name : ")
         surname = input("surname : ")
         email = input("email : ")
@@ -16,3 +16,7 @@ class BaseView:
             "password": password,
             "role": role,
         }
+
+    @classmethod
+    def user_created(cls):
+        return print("User creation successfull")
