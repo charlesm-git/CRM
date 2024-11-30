@@ -5,7 +5,7 @@ from sqlalchemy import select
 class Base(DeclarativeBase):
     @classmethod
     def get_all(cls, session):
-        return session.scalar(select(cls))
+        return session.scalars(select(cls)).all()
 
     @classmethod
     def get_by_id(cls, session, id):
@@ -20,8 +20,9 @@ class Base(DeclarativeBase):
         return obj
 
     def update(self, session, **kwargs):
-        for key, value in kwargs.items:
-            setattr(self, key, value)
+        for key, value in kwargs.items():
+            if value:
+                setattr(self, key, value)
         session.commit()
         session.refresh(self)
 

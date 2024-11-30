@@ -4,3 +4,4 @@ __pycache__/
 example*
 manual_testing*
 *.sql
+token.txt

@@ -1,5 +1,6 @@
 import jwt
 import click
+import re
 from argon2 import PasswordHasher
 
 SECRET_KEY = "This_is_the_secret_key"
@@ -24,7 +25,14 @@ def valid_token():
         raise click.ClickException("Your session has expired. Please log in again")
     except jwt.InvalidTokenError:
         raise click.ClickException("Invalid token. Please log in again")
-    
+
 def hash_password(password):
     ph = PasswordHasher()
     return ph.hash(password)
+
+def email_validation(email):
+    email_regex = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    return re.match(email_regex, email)
+
+def role_validation(role_id):
+    return int(role_id) in [1, 2, 3]

@@ -1,5 +1,5 @@
-from commands.authenticationcommands import AuthenticationController
-from commands.usercommands import BaseController
+from commands.authentication import AuthenticationController
+from commands.user import BaseController
 from database import get_session
 from views.authenticationview import AuthenticationView
 from views.userview import UserView

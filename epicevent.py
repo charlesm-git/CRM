@@ -1,7 +1,7 @@
 import click
 
-from commands.authenticationcommands import login, logout, current_user
-from commands.usercommands import user_creation
+from commands.authentication import login, logout, current_user
+from commands.user import user_create, user_update, user_delete, user_list
 
 
 @click.group()
@@ -13,7 +13,10 @@ commands = [
     login,
     logout,
     current_user,
-    user_creation,
+    user_create,
+    user_update,
+    user_delete,
+    user_list,
 ]
 
 for command in commands:

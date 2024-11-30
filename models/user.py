@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
-from sqlalchemy import ForeignKey, Integer, String, DateTime
+from sqlalchemy import ForeignKey, Integer, String, DateTime, select
 
 from models.base import Base
 import models.role
@@ -43,3 +43,7 @@ class User(Base):
 
     def __repr__(self):
         return f"{self.name} {self.surname} as {self.role.name}"
+
+    @classmethod
+    def get_user_from_email(cls, session, email):
+        return session.scalar(select(cls).where(cls.email == email))
