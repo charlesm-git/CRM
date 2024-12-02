@@ -42,8 +42,11 @@ class User(Base):
     )
 
     def __repr__(self):
-        return f"{self.name} {self.surname} as {self.role.name}"
+        return (
+            f"<User(id={self.id}, name={self.name}, surname={self.surname}, "
+            f"role={self.role.name})>"
+        )
 
     @classmethod
-    def get_user_from_email(cls, session, email):
+    def get_from_email(cls, session, email):
         return session.scalar(select(cls).where(cls.email == email))

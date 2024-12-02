@@ -37,7 +37,7 @@ def user_update(email):
             token = valid_token()
             permission = "update-user"
             has_permission(permission, token)
-            user_to_update = User.get_user_from_email(session, email)
+            user_to_update = User.get_from_email(session, email)
             if not user_to_update:
                 return UserView.user_not_found_error()
             new_data = UserView.user_update()
@@ -55,7 +55,7 @@ def user_delete(email):
             token = valid_token()
             permission = "delete-user"
             has_permission(permission, token)
-            user_to_delete = User.get_user_from_email(session, email)
+            user_to_delete = User.get_from_email(session, email)
             if not user_to_delete:
                 return UserView.user_not_found_error()
             user_to_delete.delete(session)

@@ -40,4 +40,14 @@ class Client(Base):
     )
 
     def __repr__(self):
-        return f"<Client(id={self.id}, name='{self.name}')>"
+        return (
+            f"<Client(id={self.id}, name={self.name}, "
+            f"surname={self.surname}, "
+            f"sales_contact_id={self.sales_contact_id})>"
+        )
+
+    @classmethod
+    def get_from_sales_contact(cls, session, sales_contact_id):
+        return session.scalars(
+            select(cls).where(cls.sales_contact_id == sales_contact_id)
+        ).all()

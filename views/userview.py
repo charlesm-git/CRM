@@ -8,19 +8,19 @@ class UserView:
     @classmethod
     def user_creation(cls):
         print("Enter the new user information.")
-        name = input("name : ")
-        surname = input("surname : ")
+        name = input("Name : ")
+        surname = input("Surname : ")
 
         while True:
-            email = input("email : ")
+            email = input("Email : ")
             if email_validation(email):
                 break
             print("Invalid format, try again.")
 
-        password = input("password : ")
+        password = input("Password : ")
 
         while True:
-            role_id = input("role (1: sales / 2: management / 3: support) : ")
+            role_id = input("Role (1: sales / 2: management / 3: support) : ")
             if role_validation(role_id):
                 break
             print("Invalid input, try again.")
@@ -38,19 +38,19 @@ class UserView:
         print(
             "Enter the information to update. Leave black to remain enchanged."
         )
-        name = input("name : ")
-        surname = input("surname : ")
+        name = input("Name : ")
+        surname = input("Surname : ")
 
         while True:
-            email = input("email : ")
+            email = input("Email : ")
             if email == "" or email_validation(email):
                 break
             print("Invalid format, try again.")
 
-        password = input("password : ")
+        password = input("Password : ")
 
         while True:
-            role_id = input("role (1: sales / 2: management / 3: support) : ")
+            role_id = input("Role (1: sales / 2: management / 3: support) : ")
             if role_id == "" or role_validation(role_id):
                 break
             print("Invalid input, try again.")

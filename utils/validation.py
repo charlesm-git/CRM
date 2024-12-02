@@ -36,3 +36,7 @@ def email_validation(email):
 
 def role_validation(role_id):
     return int(role_id) in [1, 2, 3]
+
+def phone_number_validation(phone_number):
+    number_regex = r"[0-9+ ]+$"
+    return re.match(number_regex, phone_number)
