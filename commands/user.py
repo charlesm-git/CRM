@@ -15,15 +15,10 @@ def user_create():
             permission = "create-user"
             has_permission(permission, token)
             data = UserView.user_creation()
-            hashed_password = hash_password(data["password"])
-            User.create(
-                session,
-                name=data["name"],
-                surname=data["surname"],
-                email=data["email"],
-                password=hashed_password,
-                role_id=int(data["role_id"]),
-            )
+            
+            data["password"] = hash_password(data["password"])
+            
+            User.create(session, **data)
             UserView.user_created()
     except PermissionError as e:
         raise click.ClickException(e)
@@ -37,9 +32,11 @@ def user_update(email):
             token = valid_token()
             permission = "update-user"
             has_permission(permission, token)
+
             user_to_update = User.get_from_email(session, email)
             if not user_to_update:
                 return UserView.user_not_found_error()
+
             new_data = UserView.user_update()
             user_to_update.update(session, **new_data)
             UserView.user_updated()

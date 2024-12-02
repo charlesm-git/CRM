@@ -21,7 +21,7 @@ class Base(DeclarativeBase):
 
     def update(self, session, **kwargs):
         for key, value in kwargs.items():
-            if value:
+            if value != "":
                 setattr(self, key, value)
         session.commit()
         session.refresh(self)

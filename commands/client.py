@@ -1,11 +1,10 @@
 import click
 
 from database import Session
-from models.user import User
 from models.client import Client
 from views.clientview import ClientView
-from utils.validation import valid_token, hash_password
-from utils.permission import has_permission
+from utils.validation import valid_token
+from utils.permission import has_permission, has_object_permission
 
 
 @click.command(help="Create a new client")
@@ -16,11 +15,11 @@ def client_create():
             permission = "create-client"
             has_permission(permission, token)
             data = ClientView.client_creation()
-            
+
             if data["company"] == "":
                 data["company"] = None
             data["sales_contact_id"] = token["user_id"]
-            
+
             Client.create(session, **data)
             ClientView.client_created()
     except PermissionError as e:
@@ -34,10 +33,13 @@ def client_update(id):
         with Session() as session:
             token = valid_token()
             permission = "update-client"
-            has_permission(permission, token)
+
             client_to_update = Client.get_by_id(session, id)
             if not client_to_update:
                 return ClientView.client_not_found_error()
+
+            has_object_permission(permission, token, client_to_update)
+            
             new_data = ClientView.client_update()
             client_to_update.update(session, **new_data)
             ClientView.client_updated()
@@ -52,10 +54,13 @@ def client_delete(id):
         with Session() as session:
             token = valid_token()
             permission = "delete-client"
-            has_permission(permission, token)
+
             client_to_delete = Client.get_by_id(session, id)
             if not client_to_delete:
                 return ClientView.client_not_found_error()
+
+            has_object_permission(permission, token, client_to_delete)
+
             client_to_delete.delete(session)
             ClientView.client_deleted()
     except PermissionError as e:
@@ -73,9 +78,9 @@ def client_list(mine):
             clients = Client.get_from_sales_contact(session, token["user_id"])
         else:
             clients = Client.get_all(session)
-            
+
         if not clients:
-            return print("You do not have any client")
-        
-        for client in clients:
-            print(client)
+            print("You do not have any client")
+        else:
+            for client in clients:
+                print(client)

@@ -13,6 +13,12 @@ from commands.client import (
     client_delete,
     client_list,
 )
+from commands.contract import(
+    contract_create,
+    contract_update, 
+    contract_delete, 
+    contract_list,
+)
 
 
 @click.group()
@@ -32,6 +38,10 @@ commands = [
     client_update,
     client_delete,
     client_list,
+    contract_create,
+    contract_update,
+    contract_delete,
+    contract_list,
 ]
 
 for command in commands:

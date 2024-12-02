@@ -40,3 +40,6 @@ def role_validation(role_id):
 def phone_number_validation(phone_number):
     number_regex = r"[0-9+ ]+$"
     return re.match(number_regex, phone_number)
+
+def signed_status_validation(signed_status):
+    return signed_status in ["0", "1", ""]
