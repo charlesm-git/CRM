@@ -1,9 +1,6 @@
-import click
-
 from models.client import Client
 from models.contract import Contract
-from views.clientview import ClientView
-from views.contractview import ContractView
+from models.event import Event
 
 
 def has_permission(action, token):
@@ -15,6 +12,7 @@ def has_permission(action, token):
             "update-contract",
             "create-event",
             "update-event",
+            "delete-event",
         ],
         "management": [
             "create-user",
@@ -23,9 +21,12 @@ def has_permission(action, token):
             "create-contract",
             "update-contract",
             "delete-contract",
-            "update-event",
+            "update-support-event",
         ],
-        "support": ["update-event"],
+        "support": [
+            "update-event",
+            "delete-event",
+        ],
     }
     if not action in role_permission.get(token["role"], []):
         raise PermissionError(
@@ -50,6 +51,15 @@ def has_object_permission(action, token, object):
         if (
             token["role"] == "management"
             or object.client.sales_contact_id == token["user_id"]
+        ):
+            return
+
+    if type(object) is Event:
+        # Support contact of the event and sales contact of the client can
+        # modify the event
+        if (
+            object.support_contact_id == token["user_id"]
+            or object.contract.client.sales_contact_id == token["user_id"]
         ):
             return
 

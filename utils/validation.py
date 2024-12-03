@@ -1,6 +1,7 @@
 import jwt
 import click
 import re
+from datetime import datetime
 from argon2 import PasswordHasher
 
 SECRET_KEY = "This_is_the_secret_key"
@@ -43,3 +44,10 @@ def phone_number_validation(phone_number):
 
 def signed_status_validation(signed_status):
     return signed_status in ["0", "1", ""]
+
+def datetime_validation(date):
+    try:
+        datetime.strptime(date, "%Y-%m-%d %H:%M")
+        return True
+    except ValueError:
+        return False

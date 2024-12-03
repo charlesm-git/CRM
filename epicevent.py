@@ -19,6 +19,7 @@ from commands.contract import(
     contract_delete, 
     contract_list,
 )
+from commands.event import event_create, event_delete, event_list, event_update, event_update_support
 
 
 @click.group()
@@ -42,6 +43,11 @@ commands = [
     contract_update,
     contract_delete,
     contract_list,
+    event_create,
+    event_update_support,
+    event_update,
+    event_delete,
+    event_list,
 ]
 
 for command in commands:

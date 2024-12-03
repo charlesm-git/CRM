@@ -1,6 +1,3 @@
-from utils.validation import email_validation, phone_number_validation
-
-
 class ContractView:
     def __init__(self):
         pass

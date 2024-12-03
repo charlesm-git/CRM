@@ -8,8 +8,16 @@ class UserView:
     @classmethod
     def user_creation(cls):
         print("Enter the new user information.")
-        name = input("Name : ")
-        surname = input("Surname : ")
+        
+        while True:
+            name = input("Name : ")
+            if name != "":
+                break
+        
+        while True:
+            surname = input("Surname : ")
+            if surname != "":
+                break
 
         while True:
             email = input("Email : ")
@@ -17,7 +25,10 @@ class UserView:
                 break
             print("Invalid format, try again.")
 
-        password = input("Password : ")
+        while True:
+            password = input("Password : ")
+            if password != "":
+                break
 
         while True:
             role_id = input("Role (1: sales / 2: management / 3: support) : ")

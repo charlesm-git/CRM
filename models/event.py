@@ -13,11 +13,12 @@ class Event(Base):
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True
     )
+    name: Mapped[str] = mapped_column(String(50))
     contract_id: Mapped[int] = mapped_column(
         ForeignKey("contract.id", ondelete="CASCADE")
     )
-    date_start: Mapped[datetime] = mapped_column(DateTime)
-    date_end: Mapped[datetime] = mapped_column(DateTime)
+    start_date: Mapped[datetime] = mapped_column(DateTime)
+    end_date: Mapped[datetime] = mapped_column(DateTime)
     location: Mapped[str] = mapped_column(String(128))
     attendees: Mapped[int] = mapped_column(Integer)
     note: Mapped[Optional[str]] = mapped_column(Text)
