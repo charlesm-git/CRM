@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from argon2 import PasswordHasher
 
-SECRET_KEY = "This_is_the_secret_key"
+from database import JWT_SECRET_KEY
 
 
 def load_token():
@@ -22,7 +22,7 @@ def valid_token():
     """Check if the JWT is still valid"""
     token = load_token()
     try:
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms="HS256")
+        decoded_token = jwt.decode(token, JWT_SECRET_KEY, algorithms="HS256")
         return decoded_token
     except jwt.ExpiredSignatureError:
         raise click.ClickException(

@@ -10,7 +10,8 @@ from sqlalchemy import select
 from models.user import User
 from database import Session
 from views import authenticationview
-from utils.validation import SECRET_KEY, valid_token
+from utils.validation import valid_token
+from database import JWT_SECRET_KEY
 
 
 @click.command(help="Login user")
@@ -44,7 +45,7 @@ def login():
                 "role": user.role.name,
                 "exp": datetime.now(UTC) + timedelta(hours=1),
             },
-            SECRET_KEY,
+            JWT_SECRET_KEY,
             algorithm="HS256",
         )
 

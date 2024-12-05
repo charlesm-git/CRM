@@ -19,6 +19,7 @@ coverage = "^7.6.8"
 pytest-cov = "^6.0.0"
 pytest-mock = "^3.14.0"
 sentry-sdk = "^2.19.0"
+python-dotenv = "^1.0.1"
 
 
 [build-system]
