@@ -13,13 +13,19 @@ from commands.client import (
     client_delete,
     client_list,
 )
-from commands.contract import(
+from commands.contract import (
     contract_create,
-    contract_update, 
-    contract_delete, 
+    contract_update,
+    contract_delete,
     contract_list,
 )
-from commands.event import event_create, event_delete, event_list, event_update, event_update_support
+from commands.event import (
+    event_create,
+    event_delete,
+    event_list,
+    event_update,
+    event_update_support,
+)
 
 
 @click.group()

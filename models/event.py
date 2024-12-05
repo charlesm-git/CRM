@@ -7,6 +7,7 @@ from models.base import Base
 import models.user
 import models.contract
 
+
 class Event(Base):
     __tablename__ = "event"
 
@@ -27,8 +28,12 @@ class Event(Base):
     )
 
     # Relationship
-    contract: Mapped["models.contract.Contract"] = relationship(back_populates="event")
-    support_contact: Mapped["models.user.User"] = relationship(back_populates="events")
+    contract: Mapped["models.contract.Contract"] = relationship(
+        back_populates="event"
+    )
+    support_contact: Mapped["models.user.User"] = relationship(
+        back_populates="events"
+    )
 
     def __repr__(self):
         return f"Event n°{self.id}"

@@ -46,7 +46,7 @@ class User(Base):
             f"<User(id={self.id}, name={self.name}, surname={self.surname}, "
             f"role={self.role.name})>"
         )
-        
+
     def __str__(self):
         return f"{self.name} {self.surname}"
 

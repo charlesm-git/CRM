@@ -24,7 +24,8 @@ def contract_creation():
 
     while True:
         remaining_amount_to_pay = input(
-            "Remaining amount to pay (Leave blank if nothing has been payed yet) : "
+            "Remaining amount to pay (Leave blank if nothing has been payed "
+            "yet) : "
         )
         if remaining_amount_to_pay == "" or remaining_amount_to_pay.isdigit():
             break
@@ -69,6 +70,7 @@ def contract_update():
 
 
 def list_display(contracts):
+    """Display a list of Contract in a readable table"""
     console = Console()
 
     table = Table(
@@ -93,7 +95,8 @@ def list_display(contracts):
             str(contract.client.id),
             f"{contract.client.name} {contract.client.surname}",
             f"{contract.client.email} {contract.client.phone_number}",
-            f"{contract.client.sales_contact.name} {contract.client.sales_contact.surname}",
+            f"{contract.client.sales_contact.name} "
+            f"{contract.client.sales_contact.surname}",
             str(contract.total_contract_amount),
             str(contract.remaining_amount_to_pay),
             str(contract.contract_signed_status),

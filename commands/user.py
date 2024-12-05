@@ -16,6 +16,7 @@ def user_create():
             permission = "create-user"
             has_permission(permission, token)
 
+            # Get user input
             data = userview.user_creation()
 
             # Complementary data treatment
@@ -36,12 +37,15 @@ def user_update(email):
             permission = "update-user"
             has_permission(permission, token)
 
+            # Retrieve user to update
             user = User.get_from_email(session, email)
             if not user:
                 return baseview.is_not_found_error()
 
+            # Display a table containing the information retrieved
             baseview.display_object(user)
 
+            # Get new input from user and update
             new_data = userview.user_update()
             user.update(session, **new_data)
             baseview.is_updated()
@@ -58,10 +62,12 @@ def user_delete(email):
             permission = "delete-user"
             has_permission(permission, token)
 
+            # Retrieve user to delete
             user = User.get_from_email(session, email)
             if not user:
                 return baseview.is_not_found_error()
 
+            # Deletes it
             user.delete(session)
             baseview.is_deleted()
     except PermissionError as e:
@@ -72,6 +78,7 @@ def user_delete(email):
 def user_list():
     with Session() as session:
         valid_token()
+        # Retrieve all users
         users = User.get_all(session)
         # Display the users in a table
         userview.list_display(users)

@@ -12,4 +12,3 @@ with Session() as session:
     )
     session.add(user)
     session.commit()
-    

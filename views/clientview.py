@@ -72,18 +72,21 @@ def client_update():
         "phone_number": phone_number,
         "company": company,
     }
-    
+
+
 def client_update_sales_contact():
     return input("Sales contact email : ")
 
 
 def client_already_exists_error():
     print(
-        "[red]A client with this email already exists. Check the database.[/red]"
+        "[red]A client with this email already exists. Check the database."
+        "[/red]"
     )
 
 
 def list_display(clients):
+    """Display a list of Client in a readable table"""
     console = Console()
 
     table = Table(

@@ -76,6 +76,7 @@ def user_update():
 
 
 def list_display(users):
+    """Display a list of User in a readable table"""
     console = Console()
 
     table = Table(

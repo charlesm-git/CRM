@@ -13,16 +13,18 @@ from utils.permission import has_permission, has_object_permission
 
 
 def valid_contract_selection(token, session, contract_id):
+    """Check the validity of a contract selection"""
     contract = Contract.get_by_id(session, contract_id)
     if not contract:
         baseview.is_not_found_error()
         return False
     if contract.client.sales_contact_id != token["user_id"]:
         print(
-            "[red]You can't assign an event to a client that is not your.[/red]"
+            "[red]You can't assign an event to a client that is not your."
+            "[/red]"
         )
         return False
-    if contract.contract_signed_status == False:
+    if contract.contract_signed_status is False:
         print("[red]You can't assign an event to an unsigned contract.[/red]")
         return False
     if contract.event:
@@ -39,13 +41,15 @@ def event_create():
             permission = "create-event"
             has_permission(permission, token)
 
+            # Retreive and check the validity of the contract ID provided by
+            # the user
             eventview.event_creation_welcome_message()
-
             while True:
                 contract_id = eventview.get_contract_id()
                 if valid_contract_selection(token, session, contract_id):
                     break
 
+            # Get event information from user
             data = eventview.event_creation()
 
             # Complementary data treatment
@@ -68,14 +72,16 @@ def event_update_support(id):
             permission = "update-support-event"
             has_permission(permission, token)
 
+            # Retrieve event to update
             event = Event.get_by_id(session, id)
             if not event:
                 return baseview.is_not_found_error()
 
+            # Display updated event information in a table
             baseview.display_object(event)
 
+            # Retreive and check the support contact email provided by the user
             eventview.event_update_support_contact_welcome_message()
-
             while True:
                 support_contact_email = eventview.get_support_contact_email()
                 if not email_validation(support_contact_email):
@@ -106,16 +112,21 @@ def event_update(id):
             token = valid_token()
             permission = "update-event"
 
+            # Retrieve event to update
             event = Event.get_by_id(session, id)
             if not event:
                 return baseview.is_not_found_error()
 
+            # Check object permission
             has_object_permission(permission, token, event)
 
+            # Display updated event information in a table
             baseview.display_object(event)
 
+            # Get new data input from user
             new_data = eventview.event_update()
 
+            # Get and check new contract ID
             while True:
                 contract_id = eventview.get_contract_id()
                 if contract_id == "":
@@ -139,10 +150,12 @@ def event_delete(id):
             token = valid_token()
             permission = "delete-event"
 
+            # Retrieve event to delete from the DB
             event = Event.get_by_id(session, id)
             if not event:
                 return baseview.is_not_found_error()
 
+            # Checks object permission
             has_object_permission(permission, token, event)
 
             event.delete(session)
@@ -165,6 +178,17 @@ def event_delete(id):
     help="Shows events without support yet",
 )
 def event_list(mine, no_support):
+    """
+    Display a list of the events as a table
+    no filter : all events in the DB are displayed
+
+    filters
+    --mine : only event from the logged in user clients are displayed
+    (for sales and support team)
+    --no-support : only event without support are displayed
+
+    Any filter combination is doable.
+    """
     with Session() as session:
         token = valid_token()
 
@@ -179,7 +203,7 @@ def event_list(mine, no_support):
             elif token["role"] == "support":
                 filters.append(Event.support_contact_id == token["user_id"])
         if no_support:
-            filters.append(Event.support_contact_id == None)
+            filters.append(Event.support_contact_id is None)
 
         events = session.scalars(select(Event).where(*filters)).all()
 

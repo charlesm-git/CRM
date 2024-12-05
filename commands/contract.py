@@ -17,6 +17,7 @@ def valid_client_id(session, client_id):
         return False
     return True
 
+
 @click.command(help="Create a new contract")
 def contract_create():
     try:
@@ -25,19 +26,19 @@ def contract_create():
             permission = "create-contract"
             has_permission(permission, token)
 
+            # Retrieve and check the validity of the client ID provided by the
+            # user
             contractview.contract_creation_welcome_message()
-
             while True:
                 client_id = contractview.get_client_id()
                 if valid_client_id(session, client_id):
                     break
-                
-            # Retreive contract general data
+
+            # Get contract information from user
             data = contractview.contract_creation()
 
             # Complementary data treatment
             data["client_id"] = client_id
-            
             if data["remaining_amount_to_pay"] == "":
                 data["remaining_amount_to_pay"] = data["total_contract_amount"]
 
@@ -55,25 +56,28 @@ def contract_update(id):
             token = valid_token()
             permission = "update-contract"
 
+            # Retrieve the Contract to update from the DB
             contract = Contract.get_by_id(session, id)
             if not contract:
                 return baseview.is_not_found_error()
 
+            # Checks object permission
             has_object_permission(permission, token, contract)
 
+            # Display updated contract informations in a table
             baseview.display_object(contract)
 
-            # Retrieve general informations to update
+            # Get new data from user
             new_data = contractview.contract_update()
 
-            # Retrieve the updated client_id
+            # Retrieve and check the updated client_id
             while True:
                 client_id = contractview.get_client_id()
                 if client_id == "":
                     break
                 if valid_client_id(session, client_id):
                     new_data["client_id"] = client_id
-                    break             
+                    break
 
             # Convert user input into boolean
             match new_data["contract_signed_status"]:
@@ -86,7 +90,6 @@ def contract_update(id):
 
             contract.update(session, **new_data)
             baseview.is_updated()
-
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -99,10 +102,12 @@ def contract_delete(id):
             token = valid_token()
             permission = "delete-contract"
 
+            # Retreive contract to delete from the DB
             contract = Contract.get_by_id(session, id)
             if not contract:
                 return baseview.is_not_found_error()
 
+            # Check object permission
             has_object_permission(permission, token, contract)
 
             contract.delete(session)
@@ -143,6 +148,20 @@ def contract_delete(id):
     help="Show the non-fully payed contracts only",
 )
 def contract_list(mine, signed, unsigned, payed, unpayed):
+    """
+    Display a list of the contract as a table
+    no filter : all contracts in the DB are displayed
+
+    filters
+    --mine : only contract from the logged in user clients are displayed
+    (for sales team)
+    --signed : only signed contract are displayed
+    --unsigned : only unsigned contracts are displayed
+    --payed : only fully payed contracts are displayed
+    --unpayed : only non fully payed contracts are displayed
+
+    Any filter combination is doable.
+    """
     with Session() as session:
         token = valid_token()
 
@@ -152,9 +171,9 @@ def contract_list(mine, signed, unsigned, payed, unpayed):
                 Contract.client.has(sales_contact_id=token["user_id"])
             )
         if signed:
-            filters.append(Contract.contract_signed_status == True)
+            filters.append(Contract.contract_signed_status is True)
         if unsigned:
-            filters.append(Contract.contract_signed_status == False)
+            filters.append(Contract.contract_signed_status is False)
         if payed:
             filters.append(Contract.remaining_amount_to_pay == 0)
         if unpayed:

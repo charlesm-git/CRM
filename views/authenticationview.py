@@ -1,6 +1,7 @@
 from getpass import getpass
 from rich import print
 
+
 class AuthenticationView:
     def __init__(self):
         pass

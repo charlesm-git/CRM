@@ -58,7 +58,8 @@ def event_creation():
 
 def event_update_support_contact_welcome_message():
     print(
-        "Enter the email of the user that will be the support contact for this event"
+        "Enter the email of the user that will be the support contact for "
+        "this event"
     )
 
 
@@ -103,6 +104,7 @@ def event_update():
 
 
 def list_display(events):
+    """Display a list of Event in a readable table"""
     console = Console()
 
     table = Table(
@@ -129,7 +131,8 @@ def list_display(events):
             str(event.contract.id),
             event.name,
             f"{event.contract.client.name} {event.contract.client.surname}",
-            f"{event.contract.client.email} {event.contract.client.phone_number}",
+            f"{event.contract.client.email} "
+            f"{event.contract.client.phone_number}",
             str(event.start_date),
             str(event.end_date),
             f"{event.support_contact.name} {event.support_contact.surname}",

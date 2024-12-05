@@ -32,7 +32,7 @@ def has_permission(action, token):
             "delete-event",
         ],
     }
-    if not action in role_permission.get(token["role"], []):
+    if action not in role_permission.get(token["role"], []):
         raise PermissionError(
             "You do not have the permission to perform this action"
         )
