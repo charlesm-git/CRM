@@ -2,7 +2,9 @@ import click
 
 from database import Session
 from models.client import Client
-from views.clientview import ClientView
+from models.user import User
+from views import clientview
+from views import baseview
 from utils.validation import valid_token
 from utils.permission import has_permission, has_object_permission
 
@@ -14,14 +16,19 @@ def client_create():
             token = valid_token()
             permission = "create-client"
             has_permission(permission, token)
-            data = ClientView.client_creation()
 
+            data = clientview.client_creation()
+
+            if Client.get_from_email(session, data["email"]):
+                return clientview.client_already_exists_error()
+
+            # Complementary data treatment
             if data["company"] == "":
                 data["company"] = None
             data["sales_contact_id"] = token["user_id"]
 
             Client.create(session, **data)
-            ClientView.client_created()
+            baseview.is_created()
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -34,15 +41,33 @@ def client_update(id):
             token = valid_token()
             permission = "update-client"
 
-            client_to_update = Client.get_by_id(session, id)
-            if not client_to_update:
-                return ClientView.client_not_found_error()
+            client = Client.get_by_id(session, id)
+            if not client:
+                return baseview.is_not_found_error()
 
-            has_object_permission(permission, token, client_to_update)
+            has_object_permission(permission, token, client)
+
+            baseview.display_object(client)
+
+            new_data = clientview.client_update()
             
-            new_data = ClientView.client_update()
-            client_to_update.update(session, **new_data)
-            ClientView.client_updated()
+            # Verification that the sales_contact_id provided is valid
+            while True:
+                sales_contact_email = clientview.client_update_sales_contact()
+                if sales_contact_email == "":
+                    break
+                sales_contact = User.get_from_email(session, sales_contact_email)
+                if not sales_contact:
+                    baseview.is_not_found_error()
+                    continue
+                if sales_contact.role.name != "sales":
+                    print("This user is not part of the sales team.")
+                    continue
+                new_data["sales_contact_id"] = sales_contact.id
+                break
+            
+            client.update(session, **new_data)
+            baseview.is_updated()
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -55,14 +80,14 @@ def client_delete(id):
             token = valid_token()
             permission = "delete-client"
 
-            client_to_delete = Client.get_by_id(session, id)
-            if not client_to_delete:
-                return ClientView.client_not_found_error()
+            client = Client.get_by_id(session, id)
+            if not client:
+                return baseview.is_not_found_error()
 
-            has_object_permission(permission, token, client_to_delete)
+            has_object_permission(permission, token, client)
 
-            client_to_delete.delete(session)
-            ClientView.client_deleted()
+            client.delete(session)
+            baseview.is_deleted()
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -82,5 +107,4 @@ def client_list(mine):
         if not clients:
             print("You do not have any client")
         else:
-            for client in clients:
-                print(client)
+            clientview.list_display(clients)

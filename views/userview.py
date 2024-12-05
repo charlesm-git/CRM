@@ -1,91 +1,106 @@
+from rich.console import Console
+from rich.table import Table
+
 from utils.validation import email_validation, role_validation
+from views import baseview
 
 
-class UserView:
-    def __init__(self):
-        pass
+def user_creation():
+    print("Enter the new user information.")
 
-    @classmethod
-    def user_creation(cls):
-        print("Enter the new user information.")
-        
-        while True:
-            name = input("Name : ")
-            if name != "":
-                break
-        
-        while True:
-            surname = input("Surname : ")
-            if surname != "":
-                break
-
-        while True:
-            email = input("Email : ")
-            if email_validation(email):
-                break
-            print("Invalid format, try again.")
-
-        while True:
-            password = input("Password : ")
-            if password != "":
-                break
-
-        while True:
-            role_id = input("Role (1: sales / 2: management / 3: support) : ")
-            if role_validation(role_id):
-                break
-            print("Invalid input, try again.")
-
-        return {
-            "name": name,
-            "surname": surname,
-            "email": email,
-            "password": password,
-            "role_id": role_id,
-        }
-
-    @classmethod
-    def user_update(cls):
-        print(
-            "Enter the information to update. Leave black to remain enchanged."
-        )
+    while True:
         name = input("Name : ")
+        if name != "":
+            break
+        baseview.can_not_be_empty_error()
+
+    while True:
         surname = input("Surname : ")
+        if surname != "":
+            break
+        baseview.can_not_be_empty_error()
 
-        while True:
-            email = input("Email : ")
-            if email == "" or email_validation(email):
-                break
-            print("Invalid format, try again.")
+    while True:
+        email = input("Email : ")
+        if email_validation(email):
+            break
+        baseview.invalid_format_error()
 
+    while True:
         password = input("Password : ")
+        if password != "":
+            break
+        baseview.can_not_be_empty_error()
 
-        while True:
-            role_id = input("Role (1: sales / 2: management / 3: support) : ")
-            if role_id == "" or role_validation(role_id):
-                break
-            print("Invalid input, try again.")
+    while True:
+        role_id = input("Role (1: sales / 2: management / 3: support) : ")
+        if role_validation(role_id):
+            break
+        baseview.invalid_format_error()
 
-        return {
-            "name": name,
-            "surname": surname,
-            "email": email,
-            "password": password,
-            "role_id": role_id,
-        }
+    return {
+        "name": name,
+        "surname": surname,
+        "email": email,
+        "password": password,
+        "role_id": role_id,
+    }
 
-    @classmethod
-    def user_created(cls):
-        print("User created successfully")
 
-    @classmethod
-    def user_updated(cls):
-        print("User updated successfully")
+def user_update():
+    baseview.update_message()
+    name = input("Name : ")
+    surname = input("Surname : ")
 
-    @classmethod
-    def user_deleted(cls):
-        print("User deleted successfully")
+    while True:
+        email = input("Email : ")
+        if email == "" or email_validation(email):
+            break
+        baseview.invalid_format_error()
 
-    @classmethod
-    def user_not_found_error(cls):
-        print("User not found")
+    password = input("Password : ")
+
+    while True:
+        role_id = input("Role (1: sales / 2: management / 3: support) : ")
+        if role_id == "" or role_validation(role_id):
+            break
+        baseview.invalid_format_error()
+
+    return {
+        "name": name,
+        "surname": surname,
+        "email": email,
+        "password": password,
+        "role_id": role_id,
+    }
+
+
+def list_display(users):
+    console = Console()
+
+    table = Table(
+        title="Users List",
+        show_header=True,
+        header_style="bold cyan",
+    )
+
+    table.add_column("id")
+    table.add_column("Name")
+    table.add_column("Surname")
+    table.add_column("Email")
+    table.add_column("Role")
+    table.add_column("Date created")
+    table.add_column("Last update")
+
+    for user in users:
+        table.add_row(
+            str(user.id),
+            user.name,
+            user.surname,
+            user.email,
+            user.role.name,
+            str(user.date_created),
+            str(user.date_updated),
+        )
+
+    console.print(table)

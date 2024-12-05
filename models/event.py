@@ -14,14 +14,14 @@ class Event(Base):
         Integer, primary_key=True, autoincrement=True
     )
     name: Mapped[str] = mapped_column(String(50))
+    location: Mapped[str] = mapped_column(String(128))
+    attendees: Mapped[int] = mapped_column(Integer)
+    start_date: Mapped[datetime] = mapped_column(DateTime)
+    end_date: Mapped[datetime] = mapped_column(DateTime)
+    note: Mapped[Optional[str]] = mapped_column(Text)
     contract_id: Mapped[int] = mapped_column(
         ForeignKey("contract.id", ondelete="CASCADE")
     )
-    start_date: Mapped[datetime] = mapped_column(DateTime)
-    end_date: Mapped[datetime] = mapped_column(DateTime)
-    location: Mapped[str] = mapped_column(String(128))
-    attendees: Mapped[int] = mapped_column(Integer)
-    note: Mapped[Optional[str]] = mapped_column(Text)
     support_contact_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("crm_user.id", ondelete="SET NULL")
     )
@@ -31,4 +31,4 @@ class Event(Base):
     support_contact: Mapped["models.user.User"] = relationship(back_populates="events")
 
     def __repr__(self):
-        return f"<Event(id={self.id}, name='{self.contract_id}')>"
+        return f"Event n°{self.id}"

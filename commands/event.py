@@ -1,17 +1,34 @@
 import click
 from sqlalchemy import select
+from rich import print
 
 from database import Session
 from models.event import Event
 from models.contract import Contract
 from models.user import User
-from views.eventview import EventView
-from utils.validation import (
-    email_validation,
-    signed_status_validation,
-    valid_token,
-)
+from views import eventview
+from views import baseview
+from utils.validation import email_validation, valid_token
 from utils.permission import has_permission, has_object_permission
+
+
+def valid_contract_selection(token, session, contract_id):
+    contract = Contract.get_by_id(session, contract_id)
+    if not contract:
+        baseview.is_not_found_error()
+        return False
+    if contract.client.sales_contact_id != token["user_id"]:
+        print(
+            "[red]You can't assign an event to a client that is not your.[/red]"
+        )
+        return False
+    if contract.contract_signed_status == False:
+        print("[red]You can't assign an event to an unsigned contract.[/red]")
+        return False
+    if contract.event:
+        print("[red]An event for this contract already exist[/red]")
+        return False
+    return True
 
 
 @click.command(help="Create a new event")
@@ -22,34 +39,20 @@ def event_create():
             permission = "create-event"
             has_permission(permission, token)
 
-            EventView.event_creation_welcome_message()
+            eventview.event_creation_welcome_message()
 
             while True:
-                contract_id = EventView.get_contract_id()
-                contract = Contract.get_by_id(session, contract_id)
-                if not contract:
-                    print(
-                        "Contract not found in the database. Check the ID given and try again."
-                    )
-                    continue
-                if contract.client.sales_contact_id != token["user_id"]:
-                    print(
-                        "You can't create an event for a client that is not your."
-                    )
-                    continue
-                if contract.contract_signed_status == False:
-                    print(
-                        "You can't create an event for an unsigned contract."
-                    )
-                    continue
-                break
+                contract_id = eventview.get_contract_id()
+                if valid_contract_selection(token, session, contract_id):
+                    break
 
-            data = EventView.event_creation()
+            data = eventview.event_creation()
 
+            # Complementary data treatment
             data["contract_id"] = contract_id
 
             Event.create(session, **data)
-            EventView.event_created()
+            baseview.is_created()
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -65,33 +68,31 @@ def event_update_support(id):
             permission = "update-support-event"
             has_permission(permission, token)
 
-            event_to_update = Event.get_by_id(session, id)
-            if not event_to_update:
-                return EventView.event_not_found_error()
+            event = Event.get_by_id(session, id)
+            if not event:
+                return baseview.is_not_found_error()
 
-            EventView.event_update_support_contact_welcome_message()
+            baseview.display_object(event)
+
+            eventview.event_update_support_contact_welcome_message()
 
             while True:
-                support_contact_email = EventView.get_support_contact_email()
+                support_contact_email = eventview.get_support_contact_email()
                 if not email_validation(support_contact_email):
                     continue
                 support_contact = User.get_from_email(
                     session, support_contact_email
                 )
                 if not support_contact:
-                    print(
-                        "User not found in the database. Check the email and try again."
-                    )
+                    baseview.is_not_found_error()
                     continue
                 if support_contact.role.name != "support":
                     print("This user is not part of the support team.")
                 else:
                     break
 
-            event_to_update.update(
-                session, support_contact_id=support_contact.id
-            )
-            EventView.event_updated()
+            event.update(session, support_contact_id=support_contact.id)
+            baseview.is_updated()
 
     except PermissionError as e:
         raise click.ClickException(e)
@@ -105,16 +106,26 @@ def event_update(id):
             token = valid_token()
             permission = "update-event"
 
-            event_to_update = Event.get_by_id(session, id)
-            if not event_to_update:
-                return EventView.event_not_found_error()
+            event = Event.get_by_id(session, id)
+            if not event:
+                return baseview.is_not_found_error()
 
-            has_object_permission(permission, token, event_to_update)
+            has_object_permission(permission, token, event)
 
-            new_data = EventView.event_update()
+            baseview.display_object(event)
 
-            event_to_update.update(session, **new_data)
-            EventView.event_updated()
+            new_data = eventview.event_update()
+
+            while True:
+                contract_id = eventview.get_contract_id()
+                if contract_id == "":
+                    break
+                if valid_contract_selection(token, session, contract_id):
+                    new_data["contract_id"] = contract_id
+                    break
+
+            event.update(session, **new_data)
+            baseview.is_updated()
 
     except PermissionError as e:
         raise click.ClickException(e)
@@ -128,14 +139,14 @@ def event_delete(id):
             token = valid_token()
             permission = "delete-event"
 
-            event_to_delete = Event.get_by_id(session, id)
-            if not event_to_delete:
-                return EventView.event_not_found_error()
+            event = Event.get_by_id(session, id)
+            if not event:
+                return baseview.is_not_found_error()
 
-            has_object_permission(permission, token, event_to_delete)
+            has_object_permission(permission, token, event)
 
-            event_to_delete.delete(session)
-            EventView.event_deleted()
+            event.delete(session)
+            baseview.is_deleted()
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -161,12 +172,12 @@ def event_list(mine, no_support):
         if mine:
             if token["role"] == "sales":
                 filters.append(
-                    Event.contract.has(Contract.client.has(sales_contact_id=token["user_id"]))
+                    Event.contract.has(
+                        Contract.client.has(sales_contact_id=token["user_id"])
+                    )
                 )
             elif token["role"] == "support":
-                filters.append(
-                    Event.support_contact_id == token["user_id"]
-                )
+                filters.append(Event.support_contact_id == token["user_id"])
         if no_support:
             filters.append(Event.support_contact_id == None)
 
@@ -175,5 +186,4 @@ def event_list(mine, no_support):
         if not events:
             print("No event fit these requirements")
         else:
-            for event in events:
-                print(event)
+            eventview.list_display(events)

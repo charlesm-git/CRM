@@ -2,7 +2,8 @@ import click
 
 from database import Session
 from models.user import User
-from views.userview import UserView
+from views import userview
+from views import baseview
 from utils.validation import valid_token, hash_password
 from utils.permission import has_permission
 
@@ -14,12 +15,14 @@ def user_create():
             token = valid_token()
             permission = "create-user"
             has_permission(permission, token)
-            data = UserView.user_creation()
-            
+
+            data = userview.user_creation()
+
+            # Complementary data treatment
             data["password"] = hash_password(data["password"])
-            
+
             User.create(session, **data)
-            UserView.user_created()
+            baseview.is_created()
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -33,13 +36,15 @@ def user_update(email):
             permission = "update-user"
             has_permission(permission, token)
 
-            user_to_update = User.get_from_email(session, email)
-            if not user_to_update:
-                return UserView.user_not_found_error()
+            user = User.get_from_email(session, email)
+            if not user:
+                return baseview.is_not_found_error()
 
-            new_data = UserView.user_update()
-            user_to_update.update(session, **new_data)
-            UserView.user_updated()
+            baseview.display_object(user)
+
+            new_data = userview.user_update()
+            user.update(session, **new_data)
+            baseview.is_updated()
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -52,11 +57,13 @@ def user_delete(email):
             token = valid_token()
             permission = "delete-user"
             has_permission(permission, token)
-            user_to_delete = User.get_from_email(session, email)
-            if not user_to_delete:
-                return UserView.user_not_found_error()
-            user_to_delete.delete(session)
-            UserView.user_deleted()
+
+            user = User.get_from_email(session, email)
+            if not user:
+                return baseview.is_not_found_error()
+
+            user.delete(session)
+            baseview.is_deleted()
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -66,5 +73,5 @@ def user_list():
     with Session() as session:
         valid_token()
         users = User.get_all(session)
-        for user in users:
-            print(user)
+        # Display the users in a table
+        userview.list_display(users)

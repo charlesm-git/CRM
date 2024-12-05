@@ -13,9 +13,6 @@ class Contract(Base):
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True
     )
-    client_id: Mapped[int] = mapped_column(
-        ForeignKey("client.id", ondelete="CASCADE")
-    )
     total_contract_amount: Mapped[int] = mapped_column(Integer)
     remaining_amount_to_pay: Mapped[int] = mapped_column(Integer)
     date_created: Mapped[datetime] = mapped_column(
@@ -27,10 +24,16 @@ class Contract(Base):
     contract_signed_status: Mapped[bool] = mapped_column(
         Boolean, default=False
     )
+    client_id: Mapped[int] = mapped_column(
+        ForeignKey("client.id", ondelete="CASCADE")
+    )
 
     # Relationship
     client: Mapped["models.client.Client"] = relationship(back_populates="contracts")
     event: Mapped["models.event.Event"] = relationship(back_populates="contract")
 
     def __repr__(self):
-        return f"<Contract(id={self.id}, client_id='{self.client_id}')>"
+        return f"Contract n°{self.id}"
+    
+    def __str__(self):
+        return f"Contract n°{self.id}"

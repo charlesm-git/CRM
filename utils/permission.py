@@ -4,6 +4,10 @@ from models.event import Event
 
 
 def has_permission(action, token):
+    """
+    Check a permission.
+    Raise an PermissionError if the access is not granted.
+    """
     role_permission = {
         "sales": [
             "create-client",
@@ -35,7 +39,10 @@ def has_permission(action, token):
 
 
 def has_object_permission(action, token, object):
-
+    """
+    Checks an object level permission.
+    Raise a PermissionError is the permission is not granted.
+    """
     # Check the general permission
     has_permission(action, token)
 

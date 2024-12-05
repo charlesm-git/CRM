@@ -1,4 +1,5 @@
 from getpass import getpass
+from rich import print
 
 class AuthenticationView:
     def __init__(self):
@@ -13,11 +14,11 @@ class AuthenticationView:
     @classmethod
     def get_email_error(cls):
         return "This email do not have an account."
-        
+
     @classmethod
     def get_mismatch_error(cls):
         return "Email and password do not match."
-    
+
     @classmethod
     def login_successfull(cls):
-        return print("Login successfull")
+        return print("[bold green]Login successfull[/bold green]")

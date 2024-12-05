@@ -16,3 +16,6 @@ class Role(Base):
 
     # Relationship
     users: Mapped[Optional[List["models.user.User"]]] = relationship(back_populates="role")
+
+    def __repr__(self):
+        return f"{self.name}"

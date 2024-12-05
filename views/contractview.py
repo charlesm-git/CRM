@@ -1,86 +1,103 @@
-class ContractView:
-    def __init__(self):
-        pass
+from rich.console import Console
+from rich.table import Table
 
-    @classmethod
-    def contract_creation_welcome_message(cls):
-        print("Enter the new contract information.")
+from views import baseview
+from utils.validation import signed_status_validation
 
-    @classmethod
-    def get_client_id(cls):
-        return input("Client ID : ")
 
-    @classmethod
-    def contract_creation(cls):
-        while True:
-            total_contract_amount = input("Total amount of the contract : ")
-            if total_contract_amount.isdigit():
-                break
-            print("Invalid input. Please make sure to enter a number")
+def contract_creation_welcome_message():
+    print("Enter the new contract information.")
 
-        while True:
-            remaining_amount_to_pay = input(
-                "Remaining amount to pay (Leave blank if nothing has been payed yet) : "
-            )
-            if remaining_amount_to_pay == "" or remaining_amount_to_pay.isdigit():
-                break
-            print("Invalid input. Please make sure to enter a number")
 
-        return {
-            "total_contract_amount": total_contract_amount,
-            "remaining_amount_to_pay": remaining_amount_to_pay,
-        }
+def get_client_id():
+    return input("Client ID : ")
 
-    @classmethod
-    def contract_update(cls):
-        print(
-            "Enter the information to update. Leave black to remain enchanged."
+
+def contract_creation():
+    while True:
+        total_contract_amount = input(
+            "Total amount of the contract (number only) : "
         )
-        while True:
-            total_contract_amount = input("Total amount of the contract : ")
-            if total_contract_amount == "" or total_contract_amount.isdigit():
-                break
-            print("Invalid input. Please make sure to enter a number")
+        if total_contract_amount.isdigit():
+            break
+        baseview.invalid_format_error()
 
-        while True:
-            remaining_amount_to_pay = input("Remaining amount to pay : ")
-            if (
-                remaining_amount_to_pay == ""
-                or remaining_amount_to_pay.isdigit()
-            ):
-                break
-            print("Invalid input. Please make sure to enter a number")
+    while True:
+        remaining_amount_to_pay = input(
+            "Remaining amount to pay (Leave blank if nothing has been payed yet) : "
+        )
+        if remaining_amount_to_pay == "" or remaining_amount_to_pay.isdigit():
+            break
+        baseview.invalid_format_error()
 
+    return {
+        "total_contract_amount": total_contract_amount,
+        "remaining_amount_to_pay": remaining_amount_to_pay,
+    }
+
+
+def contract_update():
+    baseview.update_message()
+
+    while True:
+        total_contract_amount = input(
+            "Total amount of the contract (number) : "
+        )
+        if total_contract_amount == "" or total_contract_amount.isdigit():
+            break
+        baseview.invalid_format_error()
+
+    while True:
+        remaining_amount_to_pay = input("Remaining amount to pay (number) : ")
+        if remaining_amount_to_pay == "" or remaining_amount_to_pay.isdigit():
+            break
+        baseview.invalid_format_error()
+
+    while True:
         contract_signed_status = input(
             "Contract signed status (0: unsigned / 1: signed) : "
         )
+        if signed_status_validation(contract_signed_status):
+            break
+        baseview.invalid_format_error()
 
-        return {
-            "total_contract_amount": total_contract_amount,
-            "remaining_amount_to_pay": remaining_amount_to_pay,
-            "contract_signed_status": contract_signed_status,
-        }
+    return {
+        "total_contract_amount": total_contract_amount,
+        "remaining_amount_to_pay": remaining_amount_to_pay,
+        "contract_signed_status": contract_signed_status,
+    }
 
-    @classmethod
-    def contract_created(cls):
-        print("Contract created successfully")
 
-    @classmethod
-    def contract_updated(cls):
-        print("Contract updated successfully")
+def list_display(contracts):
+    console = Console()
 
-    @classmethod
-    def contract_deleted(cls):
-        print("Contract deleted successfully")
+    table = Table(
+        title="Event List",
+        show_header=True,
+        header_style="bold cyan",
+    )
 
-    @classmethod
-    def contract_not_found_error(cls):
-        print("Contract not found")
+    table.add_column("Contract ID", width=8)
+    table.add_column("Client ID", width=6)
+    table.add_column("Client name")
+    table.add_column("Client contact")
+    table.add_column("Sales contact")
+    table.add_column("Total amount")
+    table.add_column("Remaining to pay")
+    table.add_column("Signed status")
+    table.add_column("Creation Date")
 
-    @classmethod
-    def signed_status_error(cls):
-        print(
-            "The input for the signed status should be 0 or 1. The "
-            "modification of the contract status have been ignored. Other "
-            "changes have been applied."
+    for contract in contracts:
+        table.add_row(
+            str(contract.id),
+            str(contract.client.id),
+            f"{contract.client.name} {contract.client.surname}",
+            f"{contract.client.email} {contract.client.phone_number}",
+            f"{contract.client.sales_contact.name} {contract.client.sales_contact.surname}",
+            str(contract.total_contract_amount),
+            str(contract.remaining_amount_to_pay),
+            str(contract.contract_signed_status),
+            str(contract.date_created),
         )
+
+    console.print(table)

@@ -32,22 +32,25 @@ class Client(Base):
     )
 
     # Relationship
-    contracts: Mapped[Optional[List["models.contract.Contract"]]] = (
-        relationship(back_populates="client")
-    )
     sales_contact: Mapped["models.user.User"] = relationship(
         back_populates="clients"
     )
+    contracts: Mapped[Optional[List["models.contract.Contract"]]] = (
+        relationship(back_populates="client")
+    )
 
     def __repr__(self):
-        return (
-            f"<Client(id={self.id}, name={self.name}, "
-            f"surname={self.surname}, "
-            f"sales_contact_id={self.sales_contact_id})>"
-        )
+        return f"{self.name} {self.surname}"
+
+    def __str__(self):
+        return f"{self.name} {self.surname}"
 
     @classmethod
     def get_from_sales_contact(cls, session, sales_contact_id):
         return session.scalars(
             select(cls).where(cls.sales_contact_id == sales_contact_id)
         ).all()
+
+    @classmethod
+    def get_from_email(cls, session, email):
+        return session.scalar(select(cls).where(cls.email == email))
