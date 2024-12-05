@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from models.user import User
 from database import Session
-from views.authenticationview import AuthenticationView
+from views import authenticationview
 from utils.validation import SECRET_KEY, valid_token
 
 
@@ -24,18 +24,18 @@ def login():
     """
     with Session() as session:
         # Get users credentials and look up un the database for an email match
-        email, password = AuthenticationView.get_credentials()
+        email, password = authenticationview.get_credentials()
         user = session.scalar(select(User).where(User.email == email))
 
         if not user:
-            raise click.ClickException(AuthenticationView.get_email_error())
+            raise click.ClickException(authenticationview.get_email_error())
 
         # Check if the passwords match
         ph = PasswordHasher()
         try:
             ph.verify(user.password, password)
         except VerifyMismatchError:
-            raise click.ClickException(AuthenticationView.get_mismatch_error())
+            raise click.ClickException(authenticationview.get_mismatch_error())
 
         # Creates the JWT
         token = jwt.encode(
@@ -52,7 +52,7 @@ def login():
         with open("token.txt", "w") as token_file:
             token_file.write(token)
 
-        AuthenticationView.login_successfull()
+        authenticationview.login_successfull()
 
 
 @click.command(help="Log out current user")

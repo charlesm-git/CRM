@@ -2,24 +2,19 @@ from getpass import getpass
 from rich import print
 
 
-class AuthenticationView:
-    def __init__(self):
-        pass
+def get_credentials():
+    email = input("Enter email : ")
+    password = getpass("Enter password : ")
+    return [email, password]
 
-    @classmethod
-    def get_credentials(cls):
-        email = input("Enter email : ")
-        password = getpass("Enter password : ")
-        return [email, password]
 
-    @classmethod
-    def get_email_error(cls):
-        return "This email do not have an account."
+def get_email_error():
+    return "This email do not have an account."
 
-    @classmethod
-    def get_mismatch_error(cls):
-        return "Email and password do not match."
 
-    @classmethod
-    def login_successfull(cls):
-        return print("[bold green]Login successfull[/bold green]")
+def get_mismatch_error():
+    return "Email and password do not match."
+
+
+def login_successfull():
+    return print("[bold green]Login successfull[/bold green]")
