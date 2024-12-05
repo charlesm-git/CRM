@@ -1,4 +1,5 @@
 import click
+from sentry_sdk import capture_message
 
 from database import Session
 from models.user import User
@@ -22,8 +23,22 @@ def user_create():
             # Complementary data treatment
             data["password"] = hash_password(data["password"])
 
-            User.create(session, **data)
+            # Create the user in the database
+            user = User.create(session, **data)
             baseview.is_created()
+
+            # Sentry Logs
+            message = (
+                f"New User (id {user.id}) created by User {token["user_id"]}\n"
+                f"ID : {user.id}\n"
+                f"Name : {user.name} {user.surname}\n"
+                f"Email : {user.email}\n"
+                f"Role : {user.role.name}\n"
+            )
+            capture_message(
+                message,
+                fingerprint=[f"user-create-{user.id}-{token['user_id']}"],
+            )
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -45,10 +60,35 @@ def user_update(email):
             # Display a table containing the information retrieved
             baseview.display_object(user)
 
+            # Stores old user data for Sentry logs
+            old_data = {
+                attr: getattr(user, attr)
+                for attr in user.__table__.columns.keys()
+            }
+
             # Get new input from user and update
             new_data = userview.user_update()
             user.update(session, **new_data)
             baseview.is_updated()
+
+            # Sentry Logs
+            message = (
+                f"User {user.id} updated by User {token['user_id']}\n"
+                f"Old value --> New value\n"
+            )
+            for key, value in new_data.items():
+                if value == "":
+                    continue
+                if key == "password":
+                    message += "Password --> Modified\n"
+                    continue
+                message += (
+                    f"{key} : {old_data.get(key)} --> {new_data.get(key)}\n"
+                )
+            capture_message(
+                message,
+                fingerprint=[f"user-update-{user.id}-{token['user_id']}"],
+            )
     except PermissionError as e:
         raise click.ClickException(e)
 
@@ -70,6 +110,12 @@ def user_delete(email):
             # Deletes it
             user.delete(session)
             baseview.is_deleted()
+
+            # Sentry Log
+            capture_message(
+                f"User {user.id} deleted by User {token["user_id"]}",
+                fingerprint=[f"user-delete-{user.id}"],
+            )
     except PermissionError as e:
         raise click.ClickException(e)
 

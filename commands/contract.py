@@ -1,5 +1,6 @@
 import click
 from sqlalchemy import select
+from sentry_sdk import capture_message
 
 from database import Session
 from models.contract import Contract
@@ -90,6 +91,13 @@ def contract_update(id):
 
             contract.update(session, **new_data)
             baseview.is_updated()
+
+            # Sentry log for signed contract
+            if new_data["contract_signed_status"] is True:
+                capture_message(
+                    f"Contract {contract.id} has been signed",
+                    fingerprint=[f"signed-{contract.id}"],
+                )
     except PermissionError as e:
         raise click.ClickException(e)
 
