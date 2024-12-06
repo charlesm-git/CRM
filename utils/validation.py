@@ -1,6 +1,8 @@
+from dotenv import load_dotenv
 import jwt
 import click
 import re
+import os
 from datetime import datetime
 from argon2 import PasswordHasher
 
@@ -8,14 +10,14 @@ from database import JWT_SECRET_KEY
 
 
 def load_token():
-    """Load the JWT from the .twt file"""
-    try:
-        with open("token.txt", "r") as token_file:
-            return token_file.read()
-    except FileNotFoundError:
+    """Load the JWT from .env"""
+    load_dotenv
+    jwt_token = os.getenv("JWT_TOKEN")
+    if jwt_token is None:
         raise click.ClickException(
             "You are not logged in. Please, log in first."
         )
+    return jwt_token
 
 
 def valid_token():

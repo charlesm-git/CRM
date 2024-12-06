@@ -179,9 +179,9 @@ def contract_list(mine, signed, unsigned, payed, unpayed):
                 Contract.client.has(sales_contact_id=token["user_id"])
             )
         if signed:
-            filters.append(Contract.contract_signed_status is True)
+            filters.append(Contract.contract_signed_status == True)
         if unsigned:
-            filters.append(Contract.contract_signed_status is False)
+            filters.append(Contract.contract_signed_status == False)
         if payed:
             filters.append(Contract.remaining_amount_to_pay == 0)
         if unpayed:

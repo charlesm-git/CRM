@@ -18,7 +18,7 @@ class User(Base):
     )
     name: Mapped[str] = mapped_column(String(50))
     surname: Mapped[str] = mapped_column(String(50))
-    email: Mapped[str] = mapped_column(String(320))
+    email: Mapped[str] = mapped_column(String(320), unique=True)
     password: Mapped[str] = mapped_column(String(255))
     date_created: Mapped[datetime] = mapped_column(
         DateTime, default=func.now()
@@ -44,7 +44,7 @@ class User(Base):
     def __repr__(self):
         return (
             f"<User(id={self.id}, name={self.name}, surname={self.surname}, "
-            f"role={self.role.name})>"
+            f"email={self.email}, role={self.role.name})>"
         )
 
     def __str__(self):

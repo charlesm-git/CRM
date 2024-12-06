@@ -4,8 +4,8 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import click
 import jwt
-
 from sqlalchemy import select
+from dotenv import set_key, load_dotenv
 
 from models.user import User
 from database import Session
@@ -48,10 +48,10 @@ def login():
             JWT_SECRET_KEY,
             algorithm="HS256",
         )
-
+        
         # Store the JWT
-        with open("token.txt", "w") as token_file:
-            token_file.write(token)
+        load_dotenv()
+        set_key(".env", "JWT_TOKEN", token)
 
         authenticationview.login_successfull()
 
@@ -59,11 +59,14 @@ def login():
 @click.command(help="Log out current user")
 def logout():
     """Logout the user by deleting the JWT file"""
-    try:
-        remove("token.txt")
-        print("Logged out successfully.")
-    except FileNotFoundError:
-        print("You are not logged in.")
+    with open(".env", "r+") as env_file:
+        lines = env_file.readlines()
+
+        lines = [line for line in lines if not line.startswith("JWT_TOKEN")]
+        env_file.seek(0)
+        env_file.writelines(lines)
+        env_file.truncate()
+    authenticationview.logout_successfull()
 
 
 @click.command(help="Shows the current logged in user")
