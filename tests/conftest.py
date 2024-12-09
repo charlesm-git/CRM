@@ -3,6 +3,7 @@ import pytest
 import os
 from models.base import Base
 from models.client import Client
+from models.contract import Contract
 from models.user import User
 from models.role import Role
 from utils.validation import hash_password
@@ -66,8 +67,19 @@ def client_test(user_test_sales):
         "email": "test@client.com",
         "phone_number": "+33635624875",
         "company": "",
-        "sales_contact_id":user.id,
+        "sales_contact_id": user.id,
     }
     client = Client.create(session, **data)
     yield client, session
-    
+
+
+@pytest.fixture
+def contract_test(client_test):
+    client, session = client_test
+    data = {
+        "client_id": client.id,
+        "total_contract_amount": "10000",
+        "remaining_amount_to_pay": "10000",
+    }
+    contract = Contract.create(session, **data)
+    yield contract, session
