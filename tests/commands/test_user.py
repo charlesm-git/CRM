@@ -12,11 +12,6 @@ def test_database_url_is_sqlite():
     assert DATABASE_URL == "sqlite:///:memory:"
 
 
-def test_some_feature():
-    is_test = os.getenv("TEST_ENV", "false")
-    assert is_test == "true"
-
-
 class TestUserCommands:
     def test_user_create_success(self, mocker, session, roles_setup):
         # Mock dependencies

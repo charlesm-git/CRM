@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import pytest
 import os
 from models.base import Base
+from models.client import Client
 from models.user import User
 from models.role import Role
 from utils.validation import hash_password
@@ -54,3 +55,19 @@ def user_test_management(roles_setup, session):
 
     user = User.create(session, **data)
     yield user, session
+
+
+@pytest.fixture
+def client_test(user_test_sales):
+    user, session = user_test_sales
+    data = {
+        "name": "test",
+        "surname": "client",
+        "email": "test@client.com",
+        "phone_number": "+33635624875",
+        "company": "",
+        "sales_contact_id":user.id,
+    }
+    client = Client.create(session, **data)
+    yield client, session
+    
