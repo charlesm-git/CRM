@@ -5,7 +5,11 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
 
-load_dotenv()
+is_test = os.getenv("TEST_ENV", "false").lower == "true"
+
+# Load the appropriate .env file
+if not is_test:
+    load_dotenv()  # Load .env for normal app usage.
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 SENTRY_DSN = os.getenv("SENTRY_DSN")

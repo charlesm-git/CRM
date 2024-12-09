@@ -11,7 +11,7 @@ from database import JWT_SECRET_KEY
 
 def load_token():
     """Load the JWT from .env"""
-    load_dotenv
+    load_dotenv()
     jwt_token = os.getenv("JWT_TOKEN")
     if jwt_token is None:
         raise click.ClickException(

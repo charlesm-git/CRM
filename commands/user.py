@@ -1,5 +1,7 @@
 import click
+from rich import print
 from sentry_sdk import capture_message
+from sqlalchemy.exc import IntegrityError
 
 from database import Session
 from models.user import User
@@ -41,6 +43,11 @@ def user_create():
             )
     except PermissionError as e:
         raise click.ClickException(e)
+    except IntegrityError as e:
+        print(
+            "[red]The email you provided is already used for another account. Try again.[/red]"
+        )
+        raise click.ClickException("Sorry, something went wrong.")
 
 
 @click.command(help="Update a user selected from its current email")
@@ -91,6 +98,11 @@ def user_update(email):
             )
     except PermissionError as e:
         raise click.ClickException(e)
+    except IntegrityError as e:
+        print(
+            "[red]The email you provided is already used for another account. All changes have been discarded. Try again.[/red]"
+        )
+        raise click.ClickException("Sorry, something went wrong.")
 
 
 @click.command(help="Delete a user selected from its email")

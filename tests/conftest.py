@@ -1,26 +1,24 @@
+from dotenv import load_dotenv
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from commands.user import user_delete
+import os
 from models.base import Base
 from models.user import User
 from models.role import Role
 from utils.validation import hash_password
+from database import Session, engine
 
 
 @pytest.fixture
 def session():
-    temp_db = "sqlite:///:memory:"
-    engine = create_engine(temp_db)
     Base.metadata.create_all(engine)
-    TestSession = sessionmaker(bind=engine)
-    test_session = TestSession()
+    test_session = Session()
     yield test_session
+    Base.metadata.drop_all(engine)
     test_session.close()
-    engine.dispose()
+
 
 @pytest.fixture
-def setup_roles(session):
+def roles_setup(session):
     roles = [
         Role(name="sales"),
         Role(name="management"),
@@ -29,8 +27,9 @@ def setup_roles(session):
     session.add_all(roles)
     session.commit()
 
+
 @pytest.fixture
-def test_sales_user(setup_roles, session):
+def user_test_sales(roles_setup, session):
     data = {
         "name": "sales",
         "surname": "test",
@@ -40,4 +39,18 @@ def test_sales_user(setup_roles, session):
     }
 
     user = User.create(session, **data)
-    yield user
+    yield user, session
+
+
+@pytest.fixture
+def user_test_management(roles_setup, session):
+    data = {
+        "name": "management",
+        "surname": "test",
+        "email": "management@test.com",
+        "password": hash_password("123456"),
+        "role_id": "2",
+    }
+
+    user = User.create(session, **data)
+    yield user, session
