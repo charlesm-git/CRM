@@ -5,7 +5,7 @@ from commands.client import client_create, client_delete, client_update
 from models.client import Client
 
 
-class TestUserCommands:
+class TestClientCommands:
     def test_client_create_success(self, mocker, user_test_sales):
         # Mock dependencies
         user, session = user_test_sales

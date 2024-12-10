@@ -70,6 +70,9 @@ def event_update_support(id):
         with Session() as session:
             token = valid_token()
             permission = "update-support-event"
+            # use of has_permission and not has_object_permission because at
+            # the moment only management user have this permission and they can
+            # modify any event.
             has_permission(permission, token)
 
             # Retrieve event to update

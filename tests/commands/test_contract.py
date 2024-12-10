@@ -5,7 +5,7 @@ from commands.contract import contract_create, contract_delete, contract_update
 from models.contract import Contract
 
 
-class TestUserCommands:
+class TestContractCommands:
     def test_contract_create_success(self, mocker, client_test):
         # Mock dependencies
         client, session = client_test
