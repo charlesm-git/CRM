@@ -31,8 +31,8 @@ def can_not_be_empty_error():
 
 def update_message():
     print(
-        "[blue]Enter the information to update. [bold]Just press Enter to "
-        "leave unchanged.[/bold][/blue]"
+        "[magenta]Enter the information to update. [bold]Just press Enter to "
+        "leave unchanged.[/bold][/magenta]"
     )
 
 
