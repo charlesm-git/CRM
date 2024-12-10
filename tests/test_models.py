@@ -1,7 +1,6 @@
 from datetime import datetime
 from models.contract import Contract
 from models.event import Event
-from tests.conftest import session
 from models.user import User
 from models.client import Client
 

@@ -4,13 +4,13 @@ from commands.authentication import login
 
 
 class TestAuthentication:
-
     def test_login_success(self, mocker, user_test_sales):
         mocker.patch(
             "commands.authentication.authenticationview.get_credentials",
             return_value=["sales@test.com", "123456"],
         )
-
+        
+        # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(login)
 

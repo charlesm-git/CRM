@@ -1,14 +1,13 @@
 import pytest
-import os
 from click.testing import CliRunner
 from sqlalchemy import select
 from commands.user import user_create, user_delete, user_update
-from commands.authentication import login
 from database import DATABASE_URL
 from models.user import User
 
 
 def test_database_url_is_sqlite():
+    """Verify that the database used is the testing one"""
     assert DATABASE_URL == "sqlite:///:memory:"
 
 
@@ -51,7 +50,8 @@ class TestUserCommands:
             "commands.user.has_permission",
             side_effect=PermissionError("Permission denied"),
         )
-
+        
+        # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(user_create)
 
@@ -77,13 +77,15 @@ class TestUserCommands:
 
         # Run the Click command using CliRunner
         runner = CliRunner()
+        # Try to create the same user twice
         result = runner.invoke(user_create)
         result = runner.invoke(user_create)
 
         # Assertions
         assert result.exit_code != 0
         assert (
-            "The email you provided is already used for another account. Try again."
+            "The email you provided is already used for another account. "
+            "Try again."
             in result.output
         )
 
@@ -103,6 +105,7 @@ class TestUserCommands:
             },
         )
         mocker.patch("commands.user.capture_message")
+        
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(user_update, args=[user.email])
@@ -146,6 +149,7 @@ class TestUserCommands:
         runner = CliRunner()
         result = runner.invoke(user_delete, args=[user.email])
 
+        # Search for the deleted object in the database
         deleted_user = session.scalar(
             select(User).where(User.email == user.email)
         )

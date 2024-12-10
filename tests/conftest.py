@@ -200,7 +200,7 @@ def valid_contract_for_event_setup(session):
         "end_date": datetime(2000, 1, 1, 12, 00),
         "note": "",
     }
-    event_contract_1_signed = Event.create(session, **data)
+    Event.create(session, **data)
 
     yield (
         user_sales_1,

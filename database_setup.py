@@ -16,7 +16,7 @@ def initialize_database():
             Role(name="management"),
             Role(name="support"),
         ]
-        
+
         session.add_all(roles)
         session.commit()
 

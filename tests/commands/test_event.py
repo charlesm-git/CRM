@@ -73,6 +73,7 @@ class TestEventCommands:
         assert "Permission denied" in result.output
 
     def test_wrong_contract_id_selection(self, valid_contract_for_event_setup):
+        # Call all the contract status possibilities
         (
             user,
             contract_already_used,
@@ -81,6 +82,8 @@ class TestEventCommands:
             session,
         ) = valid_contract_for_event_setup
 
+        # Check the function with all the wrong contract selection 
+        # possibilities
         token = {"user_id": user.id}
         contract_not_found = valid_contract_selection(token, session, "999")
         contract_other_sales_user = valid_contract_selection(
@@ -117,7 +120,7 @@ class TestEventCommands:
                 "note": "modified",
             },
         )
-        # First side effect checks that the function valid_contract_selection 
+        # First side effect checks that the function valid_contract_selection
         # is called. Second return no update on the contract id
         mocker.patch(
             "commands.event.eventview.get_contract_id", side_effect=["999", ""]
@@ -163,6 +166,8 @@ class TestEventCommands:
         mock_has_object_permission = mocker.patch(
             "commands.event.has_permission"
         )
+        
+        # Side effect checks all the email possibilities
         mock_support_contact_update = mocker.patch(
             "commands.event.eventview.get_support_contact_email",
             side_effect=[
@@ -200,6 +205,7 @@ class TestEventCommands:
         runner = CliRunner()
         result = runner.invoke(event_delete, args=[str(event.id)])
 
+        # Search for the deleted object in the database
         deleted_event = session.scalar(
             select(Event).where(Event.id == event.id)
         )

@@ -19,5 +19,6 @@ def get_mismatch_error():
 def login_successfull():
     return print("[bold green]Login successfull[/bold green]")
 
+
 def logout_successfull():
     return print("[bold cyan]Logout successfull[/bold cyan]")

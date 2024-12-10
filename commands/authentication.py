@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, UTC
-from os import remove
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import click
@@ -48,7 +47,7 @@ def login():
             JWT_SECRET_KEY,
             algorithm="HS256",
         )
-        
+
         # Store the JWT
         load_dotenv()
         set_key(".env", "JWT_TOKEN", token)

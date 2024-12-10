@@ -43,9 +43,10 @@ def user_create():
             )
     except PermissionError as e:
         raise click.ClickException(e)
-    except IntegrityError as e:
+    except IntegrityError:
         print(
-            "[red]The email you provided is already used for another account. Try again.[/red]"
+            "[red]The email you provided is already used for another account. "
+            "Try again.[/red]"
         )
         raise click.ClickException("Sorry, something went wrong.")
 
@@ -98,9 +99,10 @@ def user_update(email):
             )
     except PermissionError as e:
         raise click.ClickException(e)
-    except IntegrityError as e:
+    except IntegrityError:
         print(
-            "[red]The email you provided is already used for another account. All changes have been discarded. Try again.[/red]"
+            "[red]The email you provided is already used for another account. "
+            "All changes have been discarded. Try again.[/red]"
         )
         raise click.ClickException("Sorry, something went wrong.")
 

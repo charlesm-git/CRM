@@ -47,7 +47,8 @@ class TestClientCommands:
             "commands.client.has_permission",
             side_effect=PermissionError("Permission denied"),
         )
-
+        
+        # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(client_create)
 
@@ -149,6 +150,8 @@ class TestClientCommands:
         mock_user_update = mocker.patch(
             "commands.client.clientview.client_update"
         )
+        
+        # Side effect checks all the email possibilities
         mock_sales_contact_update = mocker.patch(
             "commands.client.clientview.client_update_sales_contact",
             side_effect=[
@@ -161,7 +164,7 @@ class TestClientCommands:
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(client_update, args=[str(client.id)])
-        
+
         print(result.output)
 
         # Assertions
@@ -185,6 +188,7 @@ class TestClientCommands:
         runner = CliRunner()
         result = runner.invoke(client_delete, args=[str(client.id)])
 
+        # Search for the deleted object in the database
         deleted_client = session.scalar(
             select(Client).where(Client.id == client.id)
         )

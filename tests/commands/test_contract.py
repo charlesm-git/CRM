@@ -34,11 +34,12 @@ class TestContractCommands:
         mock_valid_token.assert_called_once()
         mock_has_permission.assert_called_once()
         mock_client_id.assert_called_once()
+        mock_contract_creation.assert_called_once()
         assert "Ressource created successfully" in result.output
         assert contract.client_id == client.id
         assert contract.total_contract_amount == 10000
         assert contract.remaining_amount_to_pay == 10000
-        assert contract.contract_signed_status == False
+        assert contract.contract_signed_status is False
 
     def test_contract_create_permission_error(self, mocker, contract_test):
         # Mock dependencies
@@ -47,7 +48,8 @@ class TestContractCommands:
             "commands.contract.has_permission",
             side_effect=PermissionError("Permission denied"),
         )
-
+        
+        # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(contract_create)
 
@@ -90,7 +92,7 @@ class TestContractCommands:
         assert "Ressource updated successfully" in result.output
         assert contract.total_contract_amount == 5000
         assert contract.remaining_amount_to_pay == 0
-        assert contract.contract_signed_status == True
+        assert contract.contract_signed_status is True
 
     def test_contract_update_contract_not_found(self, mocker, contract_test):
         # Mock dependencies
@@ -113,12 +115,15 @@ class TestContractCommands:
         mocker.patch("commands.contract.valid_token")
         mocker.patch("commands.contract.has_object_permission")
         mocker.patch("commands.contract.contractview.contract_update")
+        mocker.patch("commands.contract.capture_message")
+        
+        # Side effect check that wrong contract id input ("999")has the right 
+        # behaviour
         mock_get_client_id = mocker.patch(
             "commands.contract.contractview.get_client_id",
-            side_effect=["999","1"]
+            side_effect=["999", "1"],
         )
-        mocker.patch("commands.contract.capture_message")
-
+        
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(contract_update, args=[str(contract.id)])
@@ -143,6 +148,7 @@ class TestContractCommands:
         runner = CliRunner()
         result = runner.invoke(contract_delete, args=[str(contract.id)])
 
+        # Search for the deleted object in the database
         deleted_contract = session.scalar(
             select(Contract).where(Contract.id == contract.id)
         )
