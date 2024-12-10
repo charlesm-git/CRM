@@ -8,9 +8,9 @@ from database import Session, engine
 
 
 def initialize_database():
-    Base.metadata.create_all(engine)
 
     with Session() as session:
+        Base.metadata.create_all(engine)
         roles = [
             Role(name="sales"),
             Role(name="management"),
