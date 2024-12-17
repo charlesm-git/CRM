@@ -1,4 +1,3 @@
-import pytest
 from click.testing import CliRunner
 from sqlalchemy import select
 from commands.client import client_create, client_delete, client_update
@@ -47,7 +46,7 @@ class TestClientCommands:
             "commands.client.has_permission",
             side_effect=PermissionError("Permission denied"),
         )
-        
+
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(client_create)
@@ -150,7 +149,7 @@ class TestClientCommands:
         mock_user_update = mocker.patch(
             "commands.client.clientview.client_update"
         )
-        
+
         # Side effect checks all the email possibilities
         mock_sales_contact_update = mocker.patch(
             "commands.client.clientview.client_update_sales_contact",

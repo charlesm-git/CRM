@@ -1,5 +1,4 @@
 from datetime import datetime
-import pytest
 from click.testing import CliRunner
 from sqlalchemy import select
 from commands.event import (
@@ -82,7 +81,7 @@ class TestEventCommands:
             session,
         ) = valid_contract_for_event_setup
 
-        # Check the function with all the wrong contract selection 
+        # Check the function with all the wrong contract selection
         # possibilities
         token = {"user_id": user.id}
         contract_not_found = valid_contract_selection(token, session, "999")
@@ -166,7 +165,7 @@ class TestEventCommands:
         mock_has_object_permission = mocker.patch(
             "commands.event.has_permission"
         )
-        
+
         # Side effect checks all the email possibilities
         mock_support_contact_update = mocker.patch(
             "commands.event.eventview.get_support_contact_email",

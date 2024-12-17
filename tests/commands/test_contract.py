@@ -1,4 +1,3 @@
-import pytest
 from click.testing import CliRunner
 from sqlalchemy import select
 from commands.contract import contract_create, contract_delete, contract_update
@@ -48,7 +47,7 @@ class TestContractCommands:
             "commands.contract.has_permission",
             side_effect=PermissionError("Permission denied"),
         )
-        
+
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(contract_create)
@@ -116,14 +115,14 @@ class TestContractCommands:
         mocker.patch("commands.contract.has_object_permission")
         mocker.patch("commands.contract.contractview.contract_update")
         mocker.patch("commands.contract.capture_message")
-        
-        # Side effect check that wrong contract id input ("999")has the right 
+
+        # Side effect check that wrong contract id input ("999")has the right
         # behaviour
         mock_get_client_id = mocker.patch(
             "commands.contract.contractview.get_client_id",
             side_effect=["999", "1"],
         )
-        
+
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(contract_update, args=[str(contract.id)])

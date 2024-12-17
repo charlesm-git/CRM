@@ -1,4 +1,3 @@
-import pytest
 from click.testing import CliRunner
 from sqlalchemy import select
 from commands.user import user_create, user_delete, user_update
@@ -50,7 +49,7 @@ class TestUserCommands:
             "commands.user.has_permission",
             side_effect=PermissionError("Permission denied"),
         )
-        
+
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(user_create)
@@ -85,8 +84,7 @@ class TestUserCommands:
         assert result.exit_code != 0
         assert (
             "The email you provided is already used for another account. "
-            "Try again."
-            in result.output
+            "Try again." in result.output
         )
 
     def test_user_update_success(self, mocker, user_test_sales):
@@ -105,7 +103,7 @@ class TestUserCommands:
             },
         )
         mocker.patch("commands.user.capture_message")
-        
+
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(user_update, args=[user.email])

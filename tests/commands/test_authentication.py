@@ -1,4 +1,3 @@
-import pytest
 from click.testing import CliRunner
 from commands.authentication import login
 
@@ -9,7 +8,7 @@ class TestAuthentication:
             "commands.authentication.authenticationview.get_credentials",
             return_value=["sales@test.com", "123456"],
         )
-        
+
         # Run the Click command using CliRunner
         runner = CliRunner()
         result = runner.invoke(login)
