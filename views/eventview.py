@@ -117,15 +117,21 @@ def list_display(events):
     table.add_column("Contract ID", width=8)
     table.add_column("Name")
     table.add_column("Client name")
-    table.add_column("Client contact")
+    table.add_column("Client contact", width=20)
     table.add_column("Event start date", width=10)
     table.add_column("Event end date", width=10)
-    table.add_column("Support contact")
-    table.add_column("Location", min_width=20)
+    table.add_column("Support contact", width=10)
+    table.add_column("Location", min_width=15)
     table.add_column("Attendees")
     table.add_column("Note")
 
     for event in events:
+        if event.support_contact:
+            support_contact = (
+                f"{event.support_contact.name} {event.support_contact.surname}"
+            )
+        else:
+            support_contact = "None"
         table.add_row(
             str(event.id),
             str(event.contract.id),
@@ -135,7 +141,7 @@ def list_display(events):
             f"{event.contract.client.phone_number}",
             str(event.start_date),
             str(event.end_date),
-            f"{event.support_contact.name} {event.support_contact.surname}",
+            support_contact,
             event.location,
             str(event.attendees),
             event.note,
